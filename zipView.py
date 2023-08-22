@@ -1,24 +1,7 @@
-"""
-import zipfile
-
-# Ruta al archivo ZIP
-zip_file_path = 'Search_2023-08-22 16_14_12.zip'
-
-# Abrir el archivo ZIP
-with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-    # Listar los nombres de los archivos en el archivo ZIP
-    file_names = zip_ref.namelist()
-
-    # Imprimir los nombres de los archivos
-    print("=== FILES IN ZIP ===")
-    for name in file_names:
-        print(name)
-"""
 import os
 import zipfile
 
 zip_file_path = 'Search_2023-08-22 16_14_12.zip'
-
 extract_dir = 'Extracted_files'
 
 with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
@@ -30,20 +13,36 @@ with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
             print(name)
             zip_ref.extract(name, path=extract_dir)
 
-
-
-
+# Extración y salida, junto con palabras claves a buscar dentro de los txt
 extracted_dir = 'Extracted_files'
 
-txt_files = [f for f in os.listdir(extracted_dir) if f.lower().endswith('.txt')]
+output_file = 'dumpData.txt'
 
-txt_files.sort()
+keywords = ['Username', 'Password', 'URL']
 
-for txt_file in txt_files:
-    txt_file_path = os.path.join(extracted_dir, txt_file)
-    print(f"=== Contenido de {txt_file} ===")
-    
-    with open(txt_file_path, 'r', encoding='utf-8') as f:
+def find_keywords_and_content_in_file(file_path, keywords):
+    found_data = []
+    with open(file_path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
         for line in lines:
-            print(line.strip())  
+            for keyword in keywords:
+                if keyword in line:
+                    found_data.append((keyword, line.strip()))
+    return found_data
+
+with open(output_file, 'w', encoding='utf-8') as out_f:
+    txt_files = [f for f in os.listdir(extracted_dir) if f.lower().endswith('.txt')]
+    txt_files.sort()
+    
+    for txt_file in txt_files:
+        txt_file_path = os.path.join(extracted_dir, txt_file)
+        found_data = find_keywords_and_content_in_file(txt_file_path, keywords)
+        
+        if found_data:
+            file_id = os.path.splitext(txt_file)[0]  # Obtener la ID del archivo de origen
+            out_f.write(f"Archivo: {file_id}.txt\n")
+            for keyword, content in found_data:
+                out_f.write(f"  {keyword}: {content}\n")
+
+
+print("Análisis completado. Los resultados se han almacenado en 'dumpData.txt'.")
