@@ -30,7 +30,6 @@ def insert_data_into_database(db_connection, file_id, keyword, content):
         cursor.execute(insert_query, (file_id, keyword, content))
     db_connection.commit()
 
-
 # Menu
 def menu_ordenar_archivos():
     output_file = "dumpData.txt"
@@ -42,9 +41,6 @@ def menu_ordenar_archivos():
 
     if opcion == "1":
         ordenar_archivos_txt()
-    else:
-        print("Opción no válida. Por favor, seleccione 1, 2 o 3.")
-
 
 # inicio de procesamiento de datos
 def ordenar_archivos_txt(db_connection):
@@ -99,7 +95,7 @@ def ordenar_archivos_txt(db_connection):
                 for keyword, content in found_data:
                     insert_data_into_database(db_connection, file_id, keyword, content)
 
-
+# Inicializar conexión
 def main():
     db_connection = mysql.connector.connect(
         host="localhost",
